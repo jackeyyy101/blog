@@ -1,1 +1,175 @@
- 
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人博客</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav {
+            background: #444;
+            color: #fff;
+            padding: 0.5rem;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 10px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+        }
+        .article {
+            background: #f4f4f4;
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+        
+        /* 添加深色模式样式 */
+        body.dark-mode {
+            background-color: #333;
+            color: #fff;
+        }
+        body.dark-mode .article {
+            background: #444;
+        }
+        #theme-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        #search-container {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>我的个人博客</h1>
+        <button id="theme-toggle">切换深色模式</button>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#home">首页</a></li>
+            <li><a href="#about">关于我</a></li>
+            <li><a href="#articles">文章</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <section id="about">
+            <h2>关于我</h2>
+            <p>这里是博主的简介。你可以介绍一下自己的背景、兴趣爱好等。</p>
+        </section>
+        
+        <section id="articles">
+            <h2>最新文章</h2>
+            <div id="search-container">
+                <input type="text" id="search-input" placeholder="搜索文章...">
+                <button id="search-button">搜索</button>
+            </div>
+            <div id="articles-container"></div>
+            <button id="load-more">加载更多</button>
+        </section>
+    </div>
+
+    <script>
+        // 文章数据（模拟后端数据）
+        const articles = [
+            { title: "JavaScript基础", summary: "介绍JavaScript的基本概念和语法..." },
+            { title: "CSS技巧与窍门", summary: "分享一些实用的CSS技巧..." },
+            { title: "HTML5新特性", summary: "探索HTML5带来的新功能..." },
+            { title: "响应式设计原则", summary: "学习创建适应不同设备的网页..." },
+            { title: "Web性能优化", summary: "提高网站加载速度的技巧..." },
+            { title: "前端框架比较", summary: "比较流行的前端框架的优缺点..." }
+        ];
+
+        let currentPage = 0;
+        const articlesPerPage = 3;
+
+        // 加载文章
+        function loadArticles(page, searchTerm = '') {
+            const start = page * articlesPerPage;
+            const end = start + articlesPerPage;
+            const filteredArticles = articles.filter(article => 
+                article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                article.summary.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            const articlesToShow = filteredArticles.slice(start, end);
+
+            const container = document.getElementById('articles-container');
+            articlesToShow.forEach(article => {
+                const articleElement = document.createElement('div');
+                articleElement.className = 'article';
+                articleElement.innerHTML = `
+                    <h3>${article.title}</h3>
+                    <p>${article.summary}</p>
+                    <a href="#">阅读更多</a>
+                `;
+                container.appendChild(articleElement);
+            });
+
+            if (end >= filteredArticles.length) {
+                document.getElementById('load-more').style.display = 'none';
+            } else {
+                document.getElementById('load-more').style.display = 'block';
+            }
+        }
+
+        // 初始加载文章
+        loadArticles(currentPage);
+
+        // 加载更多文章
+        document.getElementById('load-more').addEventListener('click', () => {
+            currentPage++;
+            loadArticles(currentPage);
+        });
+
+        // 搜索功能
+        document.getElementById('search-button').addEventListener('click', () => {
+            const searchTerm = document.getElementById('search-input').value;
+            document.getElementById('articles-container').innerHTML = '';
+            currentPage = 0;
+            loadArticles(currentPage, searchTerm);
+        });
+
+        // 切换深色模式
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // 平滑滚动到锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
